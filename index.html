@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Klasifikasi Kematangan Tomat</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Sistem Klasifikasi Kematangan Tomat</h1>
+  <video id="video" width="320" height="240" autoplay></video>
+  <button onclick="capture()">Ambil Gambar</button>
+  <div id="label">Kematangan: -</div>
+
+  <div class="container">
+    <!-- semua canvas diurutkan 1–9 sesuai urutan sebelumnya -->
+    <div class="canvas-container">
+      <p>1. Digitalisasi</p>
+      <canvas id="canvas-digitalisasi" width="320" height="240"></canvas>
+    </div>
+    <div class="canvas-container">
+      <p>2. Konvolusi</p>
+      <canvas id="canvas-konvolusi" width="320" height="240"></canvas>
+    </div>
+    <div class="canvas-container">
+      <p>3. Noise</p>
+      <canvas id="canvas-noise" width="320" height="240"></canvas>
+    </div>
+    <div class="canvas-container">
+      <p>4. Deblurring</p>
+      <canvas id="canvas-deblurring" width="320" height="240"></canvas>
+    </div>
+    <div class="canvas-container">
+      <p>5. Transformasi</p>
+      <canvas id="canvas-transformasi" width="320" height="240"></canvas>
+    </div>
+    <div class="canvas-container">
+      <p>6. Kontras</p>
+      <canvas id="canvas-kontras" width="320" height="240"></canvas>
+    </div>
+    <div class="canvas-container">
+      <p>7. Edge Enhancement</p>
+      <canvas id="canvas-edge" width="320" height="240"></canvas>
+    </div>
+    <div class="canvas-container">
+      <p>8. Image Restoration</p>
+      <canvas id="canvas-restore" width="320" height="240"></canvas>
+    </div>
+    <div class="canvas-container">
+      <p>9. Segmentasi</p>
+      <canvas id="canvas-segmentasi" width="320" height="240"></canvas>
+    </div>
+  </div>
+
+  <!-- Import urut -->
+  <script src="efek/konvolusi.js"></script>
+  <script src="efek/noise.js"></script>
+  <script src="efek/deblurring.js"></script>
+  <script src="efek/transformasi.js"></script>
+  <script src="efek/kontras.js"></script>
+  <script src="efek/edge.js"></script>
+  <script src="efek/restoration.js"></script>
+  <script src="efek/segmentasi.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
