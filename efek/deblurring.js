@@ -9,10 +9,11 @@ function applyDeblurring(sourceCanvasId, targetCanvasId) {
 
   // Laplacian kernel
   [
-  [ 0, -1, 0 ],
-  [-1,  9, -1],
-  [ 0, -1, 0 ]
+   [0, -1, 0],
+    [-1, 5, -1],
+    [0, -1, 0]
   ];
+
 
   const output = ctxDst.createImageData(src.width, src.height);
 
