@@ -1,3 +1,0 @@
-function restoreImage(sourceCanvasId, targetCanvasId) {
-  
-}

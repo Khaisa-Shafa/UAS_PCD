@@ -1,41 +1,28 @@
 // efek/kontras.js
+function adjustContrast(sourceCanvasId, targetCanvasId, contrast = 50) {
+  const sourceCanvas = document.getElementById(sourceCanvasId);
+  const targetCanvas = document.getElementById(targetCanvasId);
+  const sourceContext = sourceCanvas.getContext('2d');
+  const targetContext = targetCanvas.getContext('2d');
 
-function adjustContrast(sourceCanvasId, targetCanvasId, contrast = 40) {
-  const srcCanvas = document.getElementById(sourceCanvasId);
-  const dstCanvas = document.getElementById(targetCanvasId);
-  
-  if (!srcCanvas || !dstCanvas) {
-  console.error("Canvas tidak ditemukan.");
-  return;
- }
+  const width = sourceCanvas.width;
+  const height = sourceCanvas.height;
+  const imageData = sourceContext.getImageData(0, 0, width, height);
+  const data = imageData.data;
 
- const srcCtx = srcCanvas.getContext('2d');
- const dstCtx = dstCanvas.getContext('2d');
+  // Konversi nilai kontras dari -100 hingga +100 ke faktor kontras
+  const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
 
- if (!srcCtx || !dstCtx) {
-  console.error("Context 2D tidak tersedia.");
-  return;
- }
+  for (let i = 0; i < data.length; i += 4) {
+    data[i]     = truncate(factor * (data[i]     - 128) + 128); // R
+    data[i + 1] = truncate(factor * (data[i + 1] - 128) + 128); // G
+    data[i + 2] = truncate(factor * (data[i + 2] - 128) + 128); // B
+    // Alpha tetap
+  }
 
- // Samakan ukuran canvas tujuan dengan sumber
- dstCanvas.width = srcCanvas.width;
- dstCanvas.height = srcCanvas.height;
+  targetContext.putImageData(imageData, 0, 0);
+}
 
- const imageData = srcCtx.getImageData(0, 0, srcCanvas.width, srcCanvas.height);
- const data = imageData.data;
- 
- const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
-
- for (let i = 0; i < data.length; i += 4) {
-  data[i]   = truncate(factor * (data[i] - 128) + 128);     // Red
-  data[i + 1] = truncate(factor * (data[i + 1] - 128) + 128); // Green
-  data[i + 2] = truncate(factor * (data[i + 2] - 128) + 128); // Blue
-  // Alpha (data[i + 3]) tidak diubah
- }
-
- dstCtx.putImageData(output, 0, 0);
-
- function truncate(value) {
-  return Math.max(0, Math.min(255, value));
- }
+function truncate(value) {
+  return Math.min(255, Math.max(0, value));
 }
