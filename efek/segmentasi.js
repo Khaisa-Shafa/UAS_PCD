@@ -24,6 +24,8 @@ function segmentTomato(sourceCanvasId, targetCanvasId) {
 
   // Buat 'mask' dari gambar tepi dan terapkan pada gambar asli
   for (let i = 0; i < edgeData.length; i += 4) {
+    // Asumsikan hasil restorasi/tepi memiliki latar belakang hitam (nilai mendekati 0)
+    // dan objek tomat memiliki nilai lebih tinggi. Threshold bisa disesuaikan.
     const isObject = edgeData[i] > 50; // Threshold untuk menentukan bagian dari tomat
 
     if (isObject) {
@@ -55,8 +57,9 @@ function segmentTomato(sourceCanvasId, targetCanvasId) {
   classifyTomato(totalR, totalG, totalB, pixelCount);
 }
 
+
 /**
- * Fungsi untuk klasifikasi berdasarkan warna rata-rata (diubah ke basis Hue).
+ * Fungsi untuk klasifikasi berdasarkan warna rata-rata.
  * @param {number} totalR - Jumlah total nilai Merah.
  * @param {number} totalG - Jumlah total nilai Hijau.
  * @param {number} totalB - Jumlah total nilai Biru.
@@ -68,60 +71,30 @@ function classifyTomato(totalR, totalG, totalB, pixelCount) {
     return;
   }
 
-  // Hitung warna rata-rata dalam RGB
+  // Hitung warna rata-rata
   const avgR = totalR / pixelCount;
   const avgG = totalG / pixelCount;
   const avgB = totalB / pixelCount;
 
-  // --- PERUBAHAN UTAMA: Konversi rata-rata RGB ke HSV ---
-  const hsv = rgbToHsv(avgR, avgG, avgB);
-  const avg_H = hsv.h; // Ambil nilai Hue (0-360)
+  let result = "Tidak Terdefinisi";
 
-  let kematangan = "Tidak Terdefinisi";
-
-  // --- PERUBAHAN UTAMA: Logika klasifikasi baru berdasarkan HUE ---
-  if (avg_H >= 60 && avg_H <= 140) {
-    kematangan = "Mentah";
-  } else if ((avg_H >= 0 && avg_H <= 20) || (avg_H >= 340 && avg_H <= 360)) {
-    kematangan = "Matang";
-  } else if (avg_H > 20 && avg_H < 60) {
-    // Asumsi warna oranye/coklat gelap untuk tomat busuk
-    kematangan = "Busuk";
+  // Logika Klasifikasi (nilai threshold ini perlu disesuaikan melalui eksperimen)
+  // 1. Dominan Merah -> Matang
+  if (avgR > 120 && avgG < 100 && avgB < 100) {
+    result = "Matang";
+  }
+  // 2. Dominan Hijau -> Mentah
+  else if (avgG > 100 && avgR < 100) {
+    result = "Mentah";
+  }
+  // 3. Warna Gelap/Kecoklatan -> Busuk
+  // (Rendah di R dan G, atau R dan G hampir seimbang tapi gelap)
+  else if (avgR < 80 && avgG < 80) {
+     result = "Busuk";
   }
 
   // Tampilkan hasil klasifikasi di UI
   const labelElement = document.getElementById('label');
-  labelElement.innerText = `Kematangan: ${kematangan}`;
-  
-  // Console log sekarang juga menampilkan Hue untuk memudahkan debugging/penyesuaian
-  console.log(`RGB Avg: R=${avgR.toFixed(2)}, G=${avgG.toFixed(2)}, B=${avgB.toFixed(2)} | HSV Avg: H=${avg_H.toFixed(2)}, S=${hsv.s.toFixed(2)}, V=${hsv.v.toFixed(2)}`);
-}
-
-/**
- * Fungsi helper untuk mengubah nilai RGB ke HSV.
- * @param {number} r - Nilai merah (0-255)
- * @param {number} g - Nilai hijau (0-255)
- * @param {number} b - Nilai biru (0-255)
- * @returns {object} - Objek berisi {h, s, v}
- */
-function rgbToHsv(r, g, b) {
-  r /= 255; g /= 255; b /= 255;
-  let max = Math.max(r, g, b), min = Math.min(r, g, b);
-  let h, s, v = max;
-  let d = max - min;
-
-  s = max === 0 ? 0 : d / max;
-
-  if (max === min) {
-    h = 0; // achromatic (grayscale)
-  } else {
-    switch (max) {
-      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-      case g: h = (b - r) / d + 2; break;
-      case b: h = (r - g) / d + 4; break;
-    }
-    h /= 6;
-  }
-
-  return { h: h * 360, s: s, v: v };
+  labelElement.innerText = `Kematangan: ${result}`;
+  console.log(`Warna Rata-rata: R=${avgR.toFixed(2)}, G=${avgG.toFixed(2)}, B=${avgB.toFixed(2)}`);
 }
