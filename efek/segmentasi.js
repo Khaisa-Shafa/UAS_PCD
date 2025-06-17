@@ -60,13 +60,10 @@ function segmentTomato(sourceCanvasId, targetCanvasId) {
 
 /**
  * Fungsi untuk klasifikasi berdasarkan warna rata-rata.
- * @param {number} totalR - Jumlah total nilai Merah.
- * @param {number} totalG - Jumlah total nilai Hijau.
- * @param {number} totalB - Jumlah total nilai Biru.
- * @param {number} pixelCount - Jumlah total piksel tomat.
+ * Versi ini diperbaiki agar lebih fleksibel dan tidak ada hasil 'Tidak Terdefinisi'.
  */
 function classifyTomato(totalR, totalG, totalB, pixelCount) {
-  if (pixelCount === 0) {
+  if (pixelCount < 100) { // Tambahkan threshold minimum, anggap noise jika terlalu kecil
     document.getElementById('label').innerText = "Kematangan: Tomat tidak terdeteksi";
     return;
   }
@@ -78,23 +75,23 @@ function classifyTomato(totalR, totalG, totalB, pixelCount) {
 
   let result = "Tidak Terdefinisi";
 
-  // Logika Klasifikasi (nilai threshold ini perlu disesuaikan melalui eksperimen)
-  // 1. Dominan Merah -> Matang
-  if (avgR > 120 && avgG < 100 && avgB < 100) {
-    result = "Matang";
-  }
-  // 2. Dominan Hijau -> Mentah
-  else if (avgG > 100 && avgR < 100) {
-    result = "Mentah";
-  }
-  // 3. Warna Gelap/Kecoklatan -> Busuk
-  // (Rendah di R dan G, atau R dan G hampir seimbang tapi gelap)
-  else if (avgR < 80 && avgG < 80) {
-     result = "Busuk";
-  }
+// Matang: dominan merah
+if (avgR > 120 && avgR > avgG + 20 && avgR > avgB + 20) {
+  result = "Matang";
+}
+// Mentah: dominan hijau
+else if (avgG > 100 && avgG > avgR + 15) {
+  result = "Mentah";
+}
+// Busuk: gelap dan tidak dominan
+else if (avgR < 80 && avgG < 80 && avgB < 80) {
+  result = "Busuk";
+}
 
   // Tampilkan hasil klasifikasi di UI
   const labelElement = document.getElementById('label');
   labelElement.innerText = `Kematangan: ${result}`;
-  console.log(`Warna Rata-rata: R=${avgR.toFixed(2)}, G=${avgG.toFixed(2)}, B=${avgB.toFixed(2)}`);
+  
+  // Console log ini SANGAT PENTING untuk debugging. Jangan dihapus!
+  console.log(`Warna Rata-rata: R=${avgR.toFixed(2)}, G=${avgG.toFixed(2)}, B=${avgB.toFixed(2)} -> Hasil: ${result}`);
 }
