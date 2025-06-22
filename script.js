@@ -8,13 +8,15 @@ function capture() {
   const ctx = srcCanvas.getContext('2d');
   ctx.drawImage(video, 0, 0, srcCanvas.width, srcCanvas.height);
 
-  // Panggil efek per tahap
-  applyGaussianBlur('canvas-digitalisasi', 'canvas-konvolusi');
-  addSaltAndPepperNoise('canvas-konvolusi', 'canvas-noise');
-  applyDeblurring('canvas-noise', 'canvas-deblurring');
-  convertRGBtoHSV('canvas-deblurring', 'canvas-transformasi');
-  adjustContrast('canvas-transformasi', 'canvas-kontras');
+  //Simulasi kualitas kurang baik
+  addGaussianNoise('canvas-digitalisasi', 'canvas-noise');
+  applyGaussianBlur('canvas-noise', 'canvas-blur');
+  //Restorasi
+  applyDeblurring('canvas-blur', 'canvas-deblurring');
+  adjustContrast('canvas-deblurring', 'canvas-kontras');
+  //Segmentasi
   enhanceEdge('canvas-kontras', 'canvas-edge');
-  restoreImage('canvas-edge', 'canvas-restore');
-  segmentTomato('canvas-restore', 'canvas-segmentasi');
+  convertRGBtoHSV('canvas-deblurring', 'canvas-transformasi');
+  segmentTomatoHSV('canvas-kontras', 'canvas-segmentasi-hsv');
+  classifyTomatoMulti(totalR, totalG, totalB, pixelCount);
 }

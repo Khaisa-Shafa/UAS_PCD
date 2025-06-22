@@ -1,44 +1,55 @@
-function applyDeblurring(sourceCanvasId, targetCanvasId) {
-  const src = document.getElementById(sourceCanvasId);
-  const dst = document.getElementById(targetCanvasId);
-  const ctxSrc = src.getContext('2d');
-  const ctxDst = dst.getContext('2d');
-  const imageData = ctxSrc.getImageData(0, 0, src.width, src.height);
+function applyDeblurring(canvasId, outputCanvasId, kernelSize = 3, noiseVariance = 20) {
+  const canvas = document.getElementById(canvasId);
+  const outputCanvas = document.getElementById(outputCanvasId);
+  const ctx = canvas.getContext("2d");
+  const outputCtx = outputCanvas.getContext("2d");
+
+  const width = canvas.width;
+  const height = canvas.height;
+
+  const imageData = ctx.getImageData(0, 0, width, height);
   const data = imageData.data;
+  const outputData = outputCtx.createImageData(width, height);
+  const out = outputData.data;
 
-  // ✅ Fix: definisikan kernel
-  const kernel = [
-    [0, -1, 0],
-    [-1, 5, -1],
-    [0, -1, 0]
-  ];
+  const k = kernelSize;
+  const halfK = Math.floor(k / 2);
 
-  const output = ctxDst.createImageData(src.width, src.height);
+  function getPixelChannel(x, y, channel) {
+    const i = (y * width + x) * 4;
+    return data[i + channel];
+  }
 
-  for (let y = 1; y < src.height - 1; y++) {
-    for (let x = 1; x < src.width - 1; x++) {
-      let r = 0, g = 0, b = 0;
+  for (let y = halfK; y < height - halfK; y++) {
+    for (let x = halfK; x < width - halfK; x++) {
+      const i = (y * width + x) * 4;
 
-      for (let ky = -1; ky <= 1; ky++) {
-        for (let kx = -1; kx <= 1; kx++) {
-          const px = x + kx;
-          const py = y + ky;
-          const offset = (py * src.width + px) * 4;
-          const weight = kernel[ky + 1][kx + 1];
+      for (let c = 0; c < 3; c++) {
+        let sum = 0, sumSq = 0, count = 0;
 
-          r += data[offset] * weight;
-          g += data[offset + 1] * weight;
-          b += data[offset + 2] * weight;
+        for (let dy = -halfK; dy <= halfK; dy++) {
+          for (let dx = -halfK; dx <= halfK; dx++) {
+            const val = getPixelChannel(x + dx, y + dy, c);
+            sum += val;
+            sumSq += val * val;
+            count++;
+          }
         }
+
+        const mean = sum / count;
+        const variance = sumSq / count - mean * mean;
+        const centerVal = getPixelChannel(x, y, c);
+
+        const wienerVal = variance > 0
+          ? mean + (Math.max(variance - noiseVariance, 0) / variance) * (centerVal - mean)
+          : mean;
+
+        out[i + c] = Math.max(0, Math.min(255, wienerVal));
       }
 
-      const i = (y * src.width + x) * 4;
-      output.data[i] = Math.min(Math.max(r, 0), 255);
-      output.data[i + 1] = Math.min(Math.max(g, 0), 255);
-      output.data[i + 2] = Math.min(Math.max(b, 0), 255);
-      output.data[i + 3] = 255;
+      out[i + 3] = 255; // alpha
     }
   }
 
-  ctxDst.putImageData(output, 0, 0);
+  outputCtx.putImageData(outputData, 0, 0);
 }

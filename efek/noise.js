@@ -1,5 +1,4 @@
-// efek/noise.js
-function addSaltAndPepperNoise(sourceCanvasId, targetCanvasId, noiseLevel = 0.05) {
+function addGaussianNoise(sourceCanvasId, targetCanvasId, stdDev = 20) {
   const sourceCanvas = document.getElementById(sourceCanvasId);
   const targetCanvas = document.getElementById(targetCanvasId);
   const sourceContext = sourceCanvas.getContext('2d');
@@ -11,20 +10,27 @@ function addSaltAndPepperNoise(sourceCanvasId, targetCanvasId, noiseLevel = 0.05
   const imageData = sourceContext.getImageData(0, 0, width, height);
   const data = imageData.data;
 
-  const totalPixels = width * height;
-  const numNoisyPixels = totalPixels * noiseLevel;
+  for (let i = 0; i < data.length; i += 4) {
+    const noiseR = gaussianRandom() * stdDev;
+    const noiseG = gaussianRandom() * stdDev;
+    const noiseB = gaussianRandom() * stdDev;
 
-  for (let i = 0; i < numNoisyPixels; i++) {
-    const x = Math.floor(Math.random() * width);
-    const y = Math.floor(Math.random() * height);
-    const idx = (y * width + x) * 4;
-    const saltOrPepper = Math.random() < 0.5 ? 0 : 255;
-
-    data[idx] = saltOrPepper;     // Red
-    data[idx + 1] = saltOrPepper; // Green
-    data[idx + 2] = saltOrPepper; // Blue
-    // Alpha dibiarkan
+    data[i]     = clamp(data[i] + noiseR); // Red
+    data[i + 1] = clamp(data[i + 1] + noiseG); // Green
+    data[i + 2] = clamp(data[i + 2] + noiseB); // Blue
+    // Alpha tetap
   }
 
   targetContext.putImageData(imageData, 0, 0);
+
+  function clamp(value) {
+    return Math.max(0, Math.min(255, value));
+  }
+
+  function gaussianRandom() {
+    let u = 0, v = 0;
+    while (u === 0) u = Math.random();
+    while (v === 0) v = Math.random();
+    return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+  }
 }
