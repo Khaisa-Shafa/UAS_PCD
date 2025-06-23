@@ -78,15 +78,15 @@ function classifyTomatoMulti(totalR, totalG, totalB, pixelCount, mode = "HSV") {
 
   // Penilaian berdasarkan nilai Hue dan Value dari HSV
   if (v < 0.2) {
-    result = "Busuk / Sangat Gelap";
-  } else if (h >= 0 && h <= 0.06 && v > 0.3) {
-    result = "Merah Matang";
-  } else if (h >= 0 && h <= 0.06 && v <= 0.3) {
-    result = "Coklat / Merah Tua";
-  } else if (h >= 0.08 && h <= 0.18) {
-    result = "Kuning";
-  } else if (h >= 0.22 && h <= 0.44) {
-    result = "Hijau / Mentah";
+    result = "Busuk";
+  } else if (h >= 0 && h <= 0.06 && v > 0.5) {
+    result = "Matang";
+  } else if (h >= 0 && h <= 0.06 && v <= 0.5) {
+    result = "Hampir Matang";
+  } else if (h >= 0.06 && h <= 0.18) {
+    result = "Setengah Matang";
+  } else if (h >= 0.18 && h <= 0.44) {
+    result = "Mentah";
   }
 
   label.innerText = `Kematangan (${mode}): ${result}`;
