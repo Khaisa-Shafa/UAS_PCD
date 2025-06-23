@@ -8,15 +8,23 @@ function capture() {
   const ctx = srcCanvas.getContext('2d');
   ctx.drawImage(video, 0, 0, srcCanvas.width, srcCanvas.height);
 
-  //Simulasi kualitas kurang baik
-  addGaussianNoise('canvas-digitalisasi', 'canvas-noise');
-  applyGaussianBlur('canvas-noise', 'canvas-blur');
-  //Restorasi
-  applyDeblurring('canvas-blur', 'canvas-deblurring');
+  const useNoiseBlur = document.getElementById('toggleNoiseBlur').checked;
+
+  if (useNoiseBlur) {
+    addGaussianNoise('canvas-digitalisasi', 'canvas-noise');
+    applyGaussianBlur('canvas-noise', 'canvas-blur');
+    applyDeblurring('canvas-blur', 'canvas-deblurring');
+  } else {
+    applyDeblurring('canvas-digitalisasi', 'canvas-deblurring');
+  }
+
   adjustContrast('canvas-deblurring', 'canvas-kontras');
-  //Segmentasi
+
+  // Segmentasi
   enhanceEdge('canvas-kontras', 'canvas-edge');
   convertRGBtoHSV('canvas-deblurring', 'canvas-transformasi');
   segmentTomatoHSV('canvas-kontras', 'canvas-segmentasi-hsv');
+
+  // Klasifikasi
   classifyTomatoMulti(totalR, totalG, totalB, pixelCount);
 }

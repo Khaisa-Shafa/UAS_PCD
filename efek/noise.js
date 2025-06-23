@@ -1,4 +1,4 @@
-function addGaussianNoise(sourceCanvasId, targetCanvasId, stdDev = 20) {
+function addGaussianNoise(sourceCanvasId, targetCanvasId, stdDev = 8) {
   const sourceCanvas = document.getElementById(sourceCanvasId);
   const targetCanvas = document.getElementById(targetCanvasId);
   const sourceContext = sourceCanvas.getContext('2d');
@@ -15,10 +15,9 @@ function addGaussianNoise(sourceCanvasId, targetCanvasId, stdDev = 20) {
     const noiseG = gaussianRandom() * stdDev;
     const noiseB = gaussianRandom() * stdDev;
 
-    data[i]     = clamp(data[i] + noiseR); // Red
-    data[i + 1] = clamp(data[i + 1] + noiseG); // Green
-    data[i + 2] = clamp(data[i + 2] + noiseB); // Blue
-    // Alpha tetap
+    data[i]     = clamp(data[i] + noiseR);
+    data[i + 1] = clamp(data[i + 1] + noiseG);
+    data[i + 2] = clamp(data[i + 2] + noiseB);
   }
 
   targetContext.putImageData(imageData, 0, 0);

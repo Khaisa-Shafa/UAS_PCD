@@ -1,4 +1,3 @@
-// efek/kontras.js
 function adjustContrast(sourceCanvasId, targetCanvasId, contrast = 50) {
   const sourceCanvas = document.getElementById(sourceCanvasId);
   const targetCanvas = document.getElementById(targetCanvasId);
@@ -10,14 +9,12 @@ function adjustContrast(sourceCanvasId, targetCanvasId, contrast = 50) {
   const imageData = sourceContext.getImageData(0, 0, width, height);
   const data = imageData.data;
 
-  // Konversi nilai kontras dari -100 hingga +100 ke faktor kontras
   const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
 
   for (let i = 0; i < data.length; i += 4) {
     data[i]     = truncate(factor * (data[i]     - 128) + 128); // R
     data[i + 1] = truncate(factor * (data[i + 1] - 128) + 128); // G
     data[i + 2] = truncate(factor * (data[i + 2] - 128) + 128); // B
-    // Alpha tetap
   }
 
   targetContext.putImageData(imageData, 0, 0);
