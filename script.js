@@ -9,6 +9,7 @@ function capture() {
   ctx.drawImage(video, 0, 0, srcCanvas.width, srcCanvas.height);
 
   const useNoiseBlur = document.getElementById('toggleNoiseBlur').checked;
+  const useRGBOnly = document.getElementById('toggleRGBOnly').checked;
 
   if (useNoiseBlur) {
     addGaussianNoise('canvas-digitalisasi', 'canvas-noise');
@@ -20,11 +21,13 @@ function capture() {
 
   adjustContrast('canvas-deblurring', 'canvas-kontras');
 
-  // Segmentasi
-  enhanceEdge('canvas-kontras', 'canvas-edge');
-  convertRGBtoHSV('canvas-deblurring', 'canvas-transformasi');
-  segmentTomatoHSV('canvas-kontras', 'canvas-segmentasi-hsv');
-
-  // Klasifikasi
-  classifyTomatoMulti(totalR, totalG, totalB, pixelCount);
+  // Segmentasi & Klasifikasi
+  if (useRGBOnly) {
+      segmentTomatoRGB('canvas-kontras', 'canvas-segmentasi-rgb');
+      document.getElementById('label-hsv').innerText = "Kematangan (HSV): -";
+  } else {
+      convertRGBtoHSV('canvas-deblurring', 'canvas-transformasi');
+      segmentTomatoHSV('canvas-kontras', 'canvas-segmentasi-hsv');
+      document.getElementById('label-rgb').innerText = "Kematangan (RGB): -";
+    }
 }

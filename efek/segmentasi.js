@@ -4,7 +4,7 @@ function segmentTomatoHSV(sourceCanvasId, targetCanvasId) {
   const hsvCtx = hsvCanvas.getContext('2d');
   const segCtx = segCanvas.getContext('2d');
 
-  const originalCanvas = document.getElementById('canvas-digitalisasi');
+  const originalCanvas = document.getElementById(sourceCanvasId);
   const originalCtx = originalCanvas.getContext('2d');
   const originalData = originalCtx.getImageData(0, 0, originalCanvas.width, originalCanvas.height);
 
@@ -58,6 +58,80 @@ function segmentTomatoHSV(sourceCanvasId, targetCanvasId) {
 
   segCtx.putImageData(segmentedImageData, 0, 0);
   classifyTomatoMulti(totalR, totalG, totalB, pixelCount);
+}
+
+function segmentTomatoRGB(sourceCanvasId, targetCanvasId) {
+  const srcCanvas = document.getElementById(sourceCanvasId);
+  const targetCanvas = document.getElementById(targetCanvasId);
+  const srcCtx = srcCanvas.getContext('2d');
+  const tgtCtx = targetCanvas.getContext('2d');
+
+  const imgData = srcCtx.getImageData(0, 0, srcCanvas.width, srcCanvas.height);
+  const data = imgData.data;
+  const segmentedImageData = tgtCtx.createImageData(srcCanvas.width, srcCanvas.height);
+  const segmentedData = segmentedImageData.data;
+
+  let totalR = 0, totalG = 0, totalB = 0, pixelCount = 0;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+
+    // Rentang warna RGB untuk tomat (perkiraan kasar)
+    const isTomatoRGB =
+      (r > 100 && g < 80 && b < 80) ||         // Merah matang
+      (r > 130 && g > 110 && b < 60) ||        // Kuning/oranye
+      (g > 100 && r < 100 && b < 100);         // Hijau mentah
+
+    if (isTomatoRGB) {
+      segmentedData[i] = r;
+      segmentedData[i + 1] = g;
+      segmentedData[i + 2] = b;
+      segmentedData[i + 3] = 255;
+
+      totalR += r;
+      totalG += g;
+      totalB += b;
+      pixelCount++;
+    } else {
+      segmentedData[i] = segmentedData[i + 1] = segmentedData[i + 2] = 0;
+      segmentedData[i + 3] = 255;
+    }
+  }
+
+  if (pixelCount < 100) {
+    tgtCtx.clearRect(0, 0, srcCanvas.width, srcCanvas.height);
+    document.getElementById("label-rgb").innerText = "Kematangan (RGB): Tomat tidak terdeteksi";
+    return;
+  }
+
+  tgtCtx.putImageData(segmentedImageData, 0, 0);
+  classifyTomatoMulti(totalR, totalG, totalB, pixelCount, "RGB");
+}
+
+
+function classifyTomatoByRGB(sourceCanvasId) {
+  const canvas = document.getElementById(sourceCanvasId);
+  const ctx = canvas.getContext('2d');
+  const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+  let totalR = 0, totalG = 0, totalB = 0, pixelCount = 0;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+
+    if (!(r < 10 && g < 10 && b < 10)) { // abaikan hitam
+      totalR += r;
+      totalG += g;
+      totalB += b;
+      pixelCount++;
+    }
+  }
+
+  classifyTomatoMulti(totalR, totalG, totalB, pixelCount, "RGB");
 }
 
 function classifyTomatoMulti(totalR, totalG, totalB, pixelCount, mode = "HSV") {

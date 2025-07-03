@@ -9,48 +9,30 @@
   <div class="container-title">
     <h1>Sistem Klasifikasi Kematangan Tomat</h1>
     <video id="video" width="320" height="240" autoplay></video>
-    <button onclick="capture()">Ambil Gambar</button>
-    <label>
-      <input type="checkbox" id="toggleNoiseBlur" checked>
-        Gunakan Noise dan Blur
-    </label>
-    <p id="label-hsv">Kematangan (HSV): </p>
+    
+    <div class="controls">
+      <button onclick="capture()">Ambil Gambar</button>
+      <label><input type="checkbox" id="toggleNoiseBlur" checked> Gunakan Noise dan Blur</label>
+      <label><input type="checkbox" id="toggleRGBOnly"> Gunakan RGB Saja (tanpa HSV)</label>
+    </div>
+
+    <div class="results">
+      <p id="label-hsv">Kematangan (HSV): -</p>
+      <p id="label-rgb">Kematangan (RGB): -</p>
+    </div>
   </div>
 
   <div class="container">
-    <!-- semua canvas diurutkan 1–9 sesuai urutan sebelumnya -->
-    <div class="canvas-container">
-      <p>1. Digitalisasi</p>
-      <canvas id="canvas-digitalisasi" width="320" height="240"></canvas>
-    </div>
-    <div class="canvas-container">
-      <p>2. Noise </p>
-      <canvas id="canvas-noise" width="320" height="240"></canvas>
-    </div>
-    <div class="canvas-container">
-      <p>3. Blur</p>
-      <canvas id="canvas-blur" width="320" height="240"></canvas>
-    </div>
-    <div class="canvas-container">
-      <p>4. Deblurring</p>
-      <canvas id="canvas-deblurring" width="320" height="240"></canvas>
-    </div>
-    <div class="canvas-container">
-      <p>5. Kontras</p>
-      <canvas id="canvas-kontras" width="320" height="240"></canvas>
-    </div>
-    <div class="canvas-container">
-      <p>6. Edge Enhancement</p>
-      <canvas id="canvas-edge" width="320" height="240"></canvas>
-    </div>
-    <div class="canvas-container">
-      <p>7. Transformasi RGB -> HSV</p>
-      <canvas id="canvas-transformasi" width="320" height="240"></canvas>
-    </div>
-    <div class="canvas-container">
-      <p>8. Segmentasi(HSV)</p>
-      <canvas id="canvas-segmentasi-hsv" width="320" height="240"></canvas>
-    </div>
+    <!-- semua canvas diurutkan -->
+    <div class="canvas-container"><p>1. Digitalisasi</p><canvas id="canvas-digitalisasi" width="320" height="240"></canvas></div>
+    <div class="canvas-container"><p>2. Noise</p><canvas id="canvas-noise" width="320" height="240"></canvas></div>
+    <div class="canvas-container"><p>3. Blur</p><canvas id="canvas-blur" width="320" height="240"></canvas></div>
+    <div class="canvas-container"><p>4. Deblurring</p><canvas id="canvas-deblurring" width="320" height="240"></canvas></div>
+    <div class="canvas-container"><p>5. Kontras</p><canvas id="canvas-kontras" width="320" height="240"></canvas></div>
+    <div class="canvas-container"><p>6. Edge Enhancement</p><canvas id="canvas-edge" width="320" height="240"></canvas></div>
+    <div class="canvas-container"><p>7. Transformasi RGB -> HSV</p><canvas id="canvas-transformasi" width="320" height="240"></canvas></div>
+    <div class="canvas-container"><p>8. Segmentasi(HSV)</p><canvas id="canvas-segmentasi-hsv" width="320" height="240"></canvas></div>
+    <div class="canvas-container"><p>8. Segmentasi(RGB)</p><canvas id="canvas-segmentasi-rgb" width="320" height="240"></canvas></div>
   </div>
 
   <script src="efek/noise.js"></script>
