@@ -20,14 +20,16 @@ function capture() {
   }
 
   adjustContrast('canvas-deblurring', 'canvas-kontras');
+  enhanceEdge('canvas-kontras', 'canvas-edge');
 
   // Segmentasi & Klasifikasi
   if (useRGBOnly) {
-      segmentTomatoRGB('canvas-kontras', 'canvas-segmentasi-rgb');
-      document.getElementById('label-hsv').innerText = "Kematangan (HSV): -";
+    segmentTomatoRGB('canvas-kontras', 'canvas-segmentasi-rgb');
+    document.getElementById('label-hsv').innerText = "Kematangan (HSV): -";
   } else {
-      convertRGBtoHSV('canvas-deblurring', 'canvas-transformasi');
-      segmentTomatoHSV('canvas-kontras', 'canvas-segmentasi-hsv');
-      document.getElementById('label-rgb').innerText = "Kematangan (RGB): -";
-    }
+    convertRGBtoHSV('canvas-deblurring', 'canvas-transformasi');
+    segmentTomatoHSV('canvas-kontras', 'canvas-segmentasi-hsv');
+    document.getElementById('label-rgb').innerText = "Kematangan (RGB): -";
+  }
+
 }
