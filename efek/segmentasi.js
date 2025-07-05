@@ -28,6 +28,12 @@ function segmentTomatoHSV(sourceCanvasId, targetCanvasId) {
         (h >= 0.08 && h <= 0.18 && s > 0.3) ||                 // kuning
         (h >= 0.22 && h <= 0.45 && s > 0.2 && v > 0.2);        // hijau
 
+        // const isTomatoColor =
+        //   (h >= 0.00 && h <= 0.07 && s > 0.4 && v > 0.2) ||   // merah (0°–25.2°)
+        //   (h > 0.07 && h <= 0.21 && s > 0.3) ||               // kuning (25.2°–75.6°)
+        //   (h > 0.21 && h <= 0.45 && s > 0.2 && v > 0.2);      // hijau (75.6°–162°)
+
+
       if (isTomatoColor) {
         segmentedData[i]     = originalData.data[i];
         segmentedData[i + 1] = originalData.data[i + 1];
@@ -104,6 +110,11 @@ function segmentTomatoRGB(sourceCanvasId, targetCanvasId) {
       (r > 100 && g < 80 && b < 80) ||         // merah
       (r > 130 && g > 110 && b < 60) ||        // kuning/oranye
       (g > 100 && r < 100 && b < 100);         // hijau
+
+    // const isTomatoRGB =
+    //   (r > 90 && g < 85 && b < 85) ||                   // merah
+    //   ((r - g) < 40 && r > 130 && g > 100 && b < 80) || // kuning/oranye
+    //   (g > 95 && r < 110 && b < 100);                   // hijau
 
     if (isTomatoRGB) {
       segmentedData[i]     = r;
